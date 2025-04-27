@@ -1,10 +1,10 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include "Classes/Player.hpp"
-#include "Classes/GameObject.hpp"
-#include "Classes/Enemy.hpp"
-#include "Classes/Bullet.hpp"
+#include "Player.hpp"
+#include "GameObject.hpp"
+#include "Enemy.hpp"
+#include "Bullet.hpp"
 
 #include <iostream>
 #include <Windows.h>
