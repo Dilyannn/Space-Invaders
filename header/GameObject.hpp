@@ -1,6 +1,8 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
+#include "ColorsDraw.hpp"
+
 #include <iostream>
 #include <Windows.h>
 
