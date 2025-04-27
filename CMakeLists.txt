@@ -3,12 +3,18 @@ project(Space-Invaders)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Space-Invaders main.cpp
-        source/numbers.cpp
-        source/help.cpp
-        source/divisors.cpp
-        headers/numbers.h
-        headers/help.h
-        headers/divisors.h
-        headers/test.h
-        source/test.cpp)
+add_executable(
+        Space-Invaders main.cpp
+        header/Bullet.hpp
+        source/Bullet.cpp
+        header/ColorsDraw.hpp
+        source/ColorsDraw.cpp
+        header/Enemy.hpp
+        source/Enemy.cpp
+        header/Game.hpp
+        source/Game.cpp
+        header/GameObject.hpp
+        source/GameObject.cpp
+        header/Player.hpp
+        source/Player.cpp
+)
