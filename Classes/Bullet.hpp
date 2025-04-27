@@ -18,11 +18,8 @@ public:
   int getDirection() const;
   void setDirection(int direction);
 
-
 private:
   int direction;
 };
-
-
 
 #endif //BULLET_HPP

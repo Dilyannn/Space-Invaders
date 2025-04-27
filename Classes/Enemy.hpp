@@ -28,6 +28,4 @@ private:
   int direction;
 };
 
-
-
 #endif //ENEMY_HPP
