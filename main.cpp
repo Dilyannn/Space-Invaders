@@ -1,7 +1,14 @@
-#include "header/Game.hpp"
+#include "raylib.h"
 
 int main() {
-    Game game;
-    game.run();
+    InitWindow(1000, 850, "Raylib");
+    SetTargetFPS(60);
+
+    while (WindowShouldClose() == false) {
+        BeginDrawing();
+        EndDrawing();
+    }
+
+    CloseWindow();
     return 0;
 }
