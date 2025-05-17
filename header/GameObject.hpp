@@ -2,33 +2,37 @@
 #define GAMEOBJECT_H
 
 #include "ColorsDraw.hpp"
+#include "raylib.h"
 
 #include <iostream>
-#include <Windows.h>
 
 class GameObject {
 public:
-  explicit GameObject(int x = 0, int y = 0, char symbol = ' ');
-  virtual ~GameObject();
-  GameObject(const GameObject& rhs);
-  GameObject& operator=(const GameObject& rhs);
+    explicit GameObject(int x = 0, int y = 0);
+    virtual ~GameObject();
+    GameObject(const GameObject& rhs);
+    GameObject& operator=(const GameObject& rhs);
 
-  int getX() const;
-  int getY() const;
-  void setX(int x);
-  void setY(int y);
+    int getX() const;
+    int getY() const;
+    void setX(int x);
+    void setY(int y);
 
-  virtual void update();
-  virtual void render();
+    virtual void update();
+    virtual void render();
 
-  /* std::ostream& operator<<(std::ostream& ..., const Player& ...); ... */
+    std::ostream& inspect(std::ostream& out) const;
+
+protected:
+    Texture2D image;
+    //Vector2 position;
 
 private:
-  int x, y; // coordinates
-  char symbol;
-  //TODO COLORS color; // system(color 06); //0 - balck; 6 - yellow;
+    int x, y; // coordinates
+    //char symbol;
+    //TODO COLORS color; // system(color 06); //0 - balck; 6 - yellow;
 };
 
- /* operator << ... ^ */
+std::ostream& operator<<(std::ostream& out, const GameObject& rhs);
 
 #endif //GAMEOBJECT_H
