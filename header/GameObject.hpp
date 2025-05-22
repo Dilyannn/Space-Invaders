@@ -1,9 +1,7 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-#include "ColorsDraw.hpp"
 #include "raylib.h"
-
 #include <iostream>
 
 class GameObject {
@@ -21,10 +19,10 @@ public:
     virtual void update();
     virtual void render();
 
-    std::ostream& inspect(std::ostream& out) const;
+    std::ostream& ins(std::ostream& out) const;
 
 protected:
-    Texture2D image;
+    //Texture2D image;
     //Vector2 position;
 
 private:

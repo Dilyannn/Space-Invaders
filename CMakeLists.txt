@@ -17,8 +17,6 @@ add_executable(
         Space-Invaders main.cpp
         header/Bullet.hpp
         source/Bullet.cpp
-        header/ColorsDraw.hpp
-        source/ColorsDraw.cpp
         header/Enemy.hpp
         source/Enemy.cpp
         header/Game.hpp

@@ -34,6 +34,7 @@ public:
 
 private:
     int playerLives, playerScore;
+    Texture2D image;
     //TODO add speed;
 };
 
