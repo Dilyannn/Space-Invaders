@@ -30,6 +30,7 @@ Player& Player::operator=(const Player& rhs) {
 
 void Player::draw() {
     DrawTexture(image, getX(), getY(), WHITE);
+
 }
 
 void Player::moveLeft() {
@@ -86,7 +87,7 @@ std::ostream& operator<<(std::ostream& out, const Player& rhs) {
 
 void Player::reset() { // Reset position, lives, and score
     setX((GetScreenWidth() - image.width) / 2);
-    setY(GetScreenHeight() - 100);
+    setY(GetScreenHeight() - 100);;
     playerLives = 3;
     playerScore = 0;
 }
