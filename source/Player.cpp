@@ -35,12 +35,12 @@ void Player::draw() {
 
 void Player::moveLeft() {
     int newX = getX() - 7;
-    if (newX >= 25) setX(newX);
+    if (newX >= 7) setX(newX);
 }
 
 void Player::moveRight() {
     int newX = getX() + 7;
-    if (newX + image.width <= GetScreenWidth() - 25) setX(newX);
+    if (newX + image.width <= GetScreenWidth() - 7) setX(newX);
 }
 
 void Player::shoot() {
