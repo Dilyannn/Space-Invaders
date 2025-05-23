@@ -25,6 +25,8 @@ add_executable(
         source/GameObject.cpp
         header/Player.hpp
         source/Player.cpp
+        header/Barrier.hpp
+        source/Barrier.cpp
 )
 
 target_link_libraries(Space-Invaders PRIVATE raylib)

@@ -7,8 +7,8 @@ int main() {
 
     Game game;
 
-    while (WindowShouldClose() == false) {
-        game.input();
+    while (!WindowShouldClose()) { //WindowShouldClose() == false
+        game.input(); // <-; ->
 
         BeginDrawing();
         ClearBackground(DARKGRAY);

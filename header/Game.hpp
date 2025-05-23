@@ -10,6 +10,9 @@
 #include <iostream>
 #include <vector>
 
+#include "Barrier.hpp"
+#include "raylib.h"
+
 class Game {
 public:
     Game();
@@ -25,6 +28,8 @@ public:
 
 private:
     Player player;
+    std::vector<Barrier> createBarriers();
+    std::vector<Barrier> barriers;
     std::vector<GameObject*> enemies;
     std::vector<GameObject*> bullets;
     int score, level;

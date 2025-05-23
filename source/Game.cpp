@@ -28,3 +28,7 @@ void Game::initializeEnemies() {}
 void Game::update() {}
 void Game::checkCollisions() {}
 void Game::run() {}
+
+std::vector<Barrier> Game::createBarriers() {
+
+}
