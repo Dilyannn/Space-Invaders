@@ -1,6 +1,6 @@
 #include "../header/Player.hpp"
 
-Player::Player(): Player((GetScreenWidth() - 64) / 2, GetScreenHeight() - 100) {}
+Player::Player(): Player((GetScreenWidth() - 64) / 2, GetScreenHeight() - 50) {}
 
 Player::Player(int x, int y, int playerLives, int playerScore):
 GameObject(x, y), playerLives(playerLives), playerScore(playerScore) {
@@ -87,7 +87,7 @@ std::ostream& operator<<(std::ostream& out, const Player& rhs) {
 
 void Player::reset() { // Reset position, lives, and score
     setX((GetScreenWidth() - image.width) / 2);
-    setY(GetScreenHeight() - 100);;
+    setY(GetScreenHeight() - 50);;
     playerLives = 3;
     playerScore = 0;
 }

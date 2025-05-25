@@ -36,6 +36,4 @@ private:
     bool runningGame;
 };
 
-
-
 #endif //GAME_HPP
