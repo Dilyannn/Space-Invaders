@@ -36,7 +36,7 @@ void GameObject::setY(int newY) {
 void GameObject::update() {
 }
 
-void GameObject::render() {
+void GameObject::Render() {
     //DrawTexture(image, x, y, WHITE);
 }
 

@@ -1,10 +1,10 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
-
+#include <iostream>
 #include "GameObject.hpp"
 #include "raylib.h"
-
-#include <iostream>
+#include "Bullet.hpp"
+#include <vector>
 
 class Player : public GameObject {
 public:
@@ -24,6 +24,7 @@ public:
     virtual void moveLeft();
     virtual void moveRight();
     virtual void shoot(); //TODO empty; waiting for class Bullet
+    std::vector<Bullet> bullets;
 
     Player operator+(int points) const;
     Player operator-(int points) const;
@@ -36,6 +37,7 @@ private:
     int playerLives, playerScore;
     Texture2D image;
     //TODO add speed;
+    double lastFireTime;
 };
 
 std::ostream& operator<<(std::ostream& out, const Player& rhs);

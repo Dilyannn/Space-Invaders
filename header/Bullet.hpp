@@ -2,6 +2,7 @@
 #define BULLET_HPP
 
 #include "GameObject.hpp"
+#include "raylib.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -9,16 +10,24 @@
 
 class Bullet : public GameObject {
 public:
-  explicit Bullet(int x = 0, int y = 0, char symbol = ' ', int direction = 0);
+  explicit Bullet(Vector2 direction ,int speed);
   virtual ~Bullet();
   Bullet(const Bullet& rhs);
   Bullet& operator=(const Bullet& rhs);
 
   int getDirection() const;
   void setDirection(int direction);
+  void update();
+  void Render();
+  void Draw();
+  Rectangle getRect();
+  bool active;
+
 
 private:
-  int direction;
+  Vector2 direction;
+  int speed;
+
 };
 
 #endif //BULLET_HPP
