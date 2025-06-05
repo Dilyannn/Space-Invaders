@@ -2,28 +2,24 @@
 #define ENEMY_HPP
 
 #include "GameObject.hpp"
-
-#include <iostream>
-#include <cstdlib>
-#include <vector>
+#include "raylib.h"
 
 class Enemy : public GameObject {
 public:
-  explicit Enemy(int x = 0, int y = 0, char symbol = ' ', int direction = 0);
+  Enemy(int type, int x, int y);
   virtual ~Enemy();
   Enemy(const Enemy& rhs);
   Enemy& operator=(const Enemy& rhs);
 
-  int getDirection() const;
-  void setDirection(int direction);
+  void update() override;
+  void render() override;
 
-  virtual void update();
-  virtual void render();
-
-  /* std::ostream& operator<<(std::ostream& ..., const Player& ...); ... */
+  int getType() const;
+  Rectangle getRect() const;
 
 private:
-  int direction;
+  int type;
+  Texture2D image;
 };
 
-#endif //ENEMY_HPP
+#endif // ENEMY_HPP
