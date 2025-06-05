@@ -5,21 +5,17 @@
 #include "GameObject.hpp"
 #include "Enemy.hpp"
 #include "Bullet.hpp"
+#include "Barrier.hpp"
 #include "raylib.h"
 
 #include <iostream>
 #include <vector>
 
-#include "Barrier.hpp"
-#include "raylib.h"
-
 class Game {
 public:
     Game();
-    //TODO constructor with params;
     virtual ~Game();
 
-    void initializeEnemies();
     void input();
     void update();
     void checkCollisions();
@@ -27,13 +23,15 @@ public:
     void run();
 
 private:
-    Player player;
     std::vector<Barrier> createBarriers();
+    std::vector<Enemy> createEnemies();
     std::vector<Barrier> barriers;
-    std::vector<GameObject*> enemies;
+    std::vector<Enemy> enemies;
     std::vector<GameObject*> bullets;
+
+    Player player;
     int score, level;
     bool runningGame;
 };
 
-#endif //GAME_HPP
+#endif // GAME_HPP
