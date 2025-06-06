@@ -1,10 +1,13 @@
 #include "../header/Player.hpp"
+#include "../header/Bullet.hpp"
+
 
 Player::Player(): Player((GetScreenWidth() - 64) / 2, GetScreenHeight() - 50) {}
 
 Player::Player(int x, int y, int playerLives, int playerScore):
 GameObject(x, y), playerLives(playerLives), playerScore(playerScore) {
     image = LoadTexture("../source/images/spaceship.png");
+    lastFireTime = 0.;
 }
 
 Player::~Player() {
@@ -45,6 +48,15 @@ void Player::moveRight() {
 
 void Player::shoot() {
     // TODO add class Bullet logic
+    //bullets.push_back(Bullet({direction.x + image.width/2 - 2, direction.y},-6));
+    if (GetTime() - lastFireTime > 0.35) {
+        Vector2 startPos;
+        startPos.x = getX() + image.width / 2 - 2;
+        startPos.y = getY();
+
+        bullets.push_back(Bullet(startPos, -6));
+        lastFireTime = GetTime();
+    }
 }
 
 Player Player::operator+(int points) const {

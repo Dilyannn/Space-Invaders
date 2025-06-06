@@ -1,16 +1,17 @@
 #include "../header/Game.hpp"
+#include <raylib.h>
 
 Game::Game() {
     score = 0;
     level = 1;
     runningGame = true;
+    aliensDirection = 1;
 
     barriers = createBarriers();
-    enemies = createEnemies();
+    enemies  = createEnemies();
 }
 
-Game::~Game() {
-}
+Game::~Game() {}
 
 void Game::input() {
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
@@ -19,39 +20,55 @@ void Game::input() {
     if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
         player.moveRight();
     }
+    else if (IsKeyDown(KEY_SPACE)) {
+        player.shoot();
+    }
+}
+
+void Game::update() {
+    moveEnemies(); // updater function
+    for (auto& bullet : player.bullets) {
+        bullet.update();
+    }
+    deleteInactiveBullets();
+}
+
+void Game::checkCollisions() {
+    // TODO: bullet–enemy, bullet–barrier, enemy–barrier, etc.
 }
 
 void Game::render() {
     player.draw();
 
-    for (auto& enemy : enemies) {
-        enemy.render();
+    for (auto& bullet : player.bullets) {
+        bullet.render();
     }
-
     for (auto& barrier : barriers) {
         barrier.render();
     }
-}
-
-void Game::update() {
     for (auto& enemy : enemies) {
-        enemy.update();
+        enemy.render();
     }
-}
-
-void Game::checkCollisions() {
-    // TODO collisions
 }
 
 void Game::run() {
     while (runningGame && !WindowShouldClose()) {
         input();
         update();
-
         BeginDrawing();
         ClearBackground(DARKGRAY);
         render();
         EndDrawing();
+    }
+}
+
+void Game::deleteInactiveBullets() {
+    for (auto it = player.bullets.begin(); it != player.bullets.end();) {
+        if (!it->active) {
+            it = player.bullets.erase(it);
+        } else {
+            ++it;
+        }
     }
 }
 
@@ -77,11 +94,43 @@ std::vector<Enemy> Game::createEnemies() {
 
     for (int row = 0; row < rows; ++row) {
         for (int col = 0; col < cols; ++col) {
-            int type = row + 1;
+            int type = (row % 4) + 1;
             int x = startX + col * spacingX;
             int y = startY + row * spacingY;
             result.emplace_back(type, x, y);
         }
     }
     return result;
+}
+
+void Game::moveEnemies() {
+    bool hitEdge = false;
+
+    for (auto& enemy : enemies) {
+        int ex = enemy.getX();
+        int ew = static_cast<int>(enemy.getRect().width);
+        if (ex + ew >= GetScreenWidth() - 25) {
+            aliensDirection = -1;
+            hitEdge = true;
+            break;
+        }
+        if (ex <= 25) {
+            aliensDirection = 1;
+            hitEdge = true;
+            break;
+        }
+    }
+
+    if (hitEdge) {
+        moveDownAliens(10);
+    }
+    for (auto& enemy : enemies) {
+        enemy.setX(enemy.getX() + aliensDirection);
+    }
+}
+
+void Game::moveDownAliens(int distance) {
+    for (auto& enemy : enemies) {
+        enemy.setY(enemy.getY() + distance);
+    }
 }

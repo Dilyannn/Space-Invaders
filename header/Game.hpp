@@ -25,13 +25,19 @@ public:
 private:
     std::vector<Barrier> createBarriers();
     std::vector<Enemy> createEnemies();
+    void deleteInactiveBullets();
+    void moveEnemies();
+    void moveDownAliens(int distance);
+
     std::vector<Barrier> barriers;
     std::vector<Enemy> enemies;
     std::vector<GameObject*> bullets;
 
     Player player;
-    int score, level;
+    int score;
+    int level;
     bool runningGame;
+    int aliensDirection; // +1 (->) / –1 (<-)
 };
 
 #endif // GAME_HPP
