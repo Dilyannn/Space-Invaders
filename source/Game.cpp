@@ -14,6 +14,9 @@ Game::~Game() {
 }
 
 void Game::update() {
+    for (auto& enemy : enemies) {
+        enemy.update();
+    }
     for (auto& bullet: player.bullets) {
         bullet.update();
     }
@@ -50,13 +53,6 @@ void Game::render() {
     
     for (auto& enemy : enemies) {
         enemy.render();
-    }
-}
-
-
-void Game::update() {
-    for (auto& enemy : enemies) {
-        enemy.update();
     }
 }
 
