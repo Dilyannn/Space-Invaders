@@ -18,8 +18,8 @@ public:
   int getDirection() const;
   void setDirection(int direction);
   void update();
-  void Render();
-  void Draw();
+  void render();
+  void draw();
   Rectangle getRect();
   bool active;
 

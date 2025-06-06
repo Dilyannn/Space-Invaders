@@ -26,7 +26,6 @@ public:
     void render();
     void run();
 
-
 private:
     Player player;
     std::vector<Barrier> createBarriers();
@@ -35,7 +34,7 @@ private:
     std::vector<GameObject*> bullets;
     int score, level;
     bool runningGame;
-    void DeleteInactiveBullets();
+    void deleteInactiveBullets();
 };
 
 #endif //GAME_HPP

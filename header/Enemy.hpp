@@ -18,7 +18,7 @@ public:
   void setDirection(int direction);
 
   virtual void update();
-  virtual void Render();
+  virtual void render();
 
   /* std::ostream& operator<<(std::ostream& ..., const Player& ...); ... */
 

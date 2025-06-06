@@ -17,7 +17,7 @@ void Game::update() {
     for (auto& bullet: player.bullets) {
         bullet.update();
     }
-    DeleteInactiveBullets();
+    deleteInactiveBullets();
 }
 
 void Game::input() {
@@ -36,13 +36,10 @@ void Game::input() {
         player.shoot();
     }
 }
-void Game::DeleteInactiveBullets() {
+void Game::deleteInactiveBullets() {
     for (auto it = player.bullets.begin(); it != player.bullets.end();) {
-        if (!it -> active) {
-            it = player.bullets.erase(it);
-        }else {
-            it++;
-        }
+        if (!it -> active) it = player.bullets.erase(it);
+        else ++it;
     }
 }
 
@@ -51,7 +48,7 @@ void Game::render() {
     // enemies ...
 
     for (auto& bullet: player.bullets) {
-        bullet.Render();
+        bullet.render();
     }
 
     for (auto& barrier : barriers ) {

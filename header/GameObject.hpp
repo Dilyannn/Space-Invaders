@@ -17,7 +17,7 @@ public:
     void setY(int y);
 
     virtual void update();
-    virtual void Render();
+    virtual void render();
 
     std::ostream& ins(std::ostream& out) const;
 

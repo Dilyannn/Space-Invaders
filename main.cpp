@@ -2,7 +2,7 @@
 #include "header/Game.hpp"
 
 int main() {
-    InitWindow(850, 750, "Space Invaders");
+    InitWindow(1000, 850, "Space Invaders");
     SetTargetFPS(60);
 
     Game game;

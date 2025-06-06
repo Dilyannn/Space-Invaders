@@ -51,8 +51,8 @@ void Player::shoot() {
     //bullets.push_back(Bullet({direction.x + image.width/2 - 2, direction.y},-6));
     if (GetTime() - lastFireTime > 0.35) {
         Vector2 startPos;
-        startPos.x = getX() + image.width / 2 - 2; // центрирано по ширината
-        startPos.y = getY(); // излиза от горната част на кораба
+        startPos.x = getX() + image.width / 2 - 2;
+        startPos.y = getY();
 
         bullets.push_back(Bullet(startPos, -6));
         lastFireTime = GetTime();
