@@ -1,4 +1,5 @@
 #include "../header/Game.hpp"
+#include <iostream>
 
 Game::Game() {
     score = 0;
@@ -12,26 +13,46 @@ Game::Game() {
 Game::~Game() {
 }
 
+void Game::update() {
+    for (auto& bullet: player.bullets) {
+        bullet.update();
+    }
+    deleteInactiveBullets();
+}
+
 void Game::input() {
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
         player.moveLeft();
     }
     if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
         player.moveRight();
+    }else if (IsKeyDown(KEY_SPACE)) {
+        player.shoot();
+    }
+}
+void Game::deleteInactiveBullets() {
+    for (auto it = player.bullets.begin(); it != player.bullets.end();) {
+        if (!it -> active) it = player.bullets.erase(it);
+        else ++it;
     }
 }
 
 void Game::render() {
     player.draw();
 
+    for (auto& bullet: player.bullets) {
+        bullet.render();
+    }
+
+    for (auto& barrier : barriers ) {
+       barrier.render();
+    }
+    
     for (auto& enemy : enemies) {
         enemy.render();
     }
-
-    for (auto& barrier : barriers) {
-        barrier.render();
-    }
 }
+
 
 void Game::update() {
     for (auto& enemy : enemies) {
@@ -85,3 +106,4 @@ std::vector<Enemy> Game::createEnemies() {
     }
     return result;
 }
+

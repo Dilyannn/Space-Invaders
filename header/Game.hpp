@@ -32,6 +32,7 @@ private:
     Player player;
     int score, level;
     bool runningGame;
+    void deleteInactiveBullets();
 };
 
 #endif // GAME_HPP

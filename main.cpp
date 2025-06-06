@@ -9,8 +9,8 @@ int main() {
     Game game;
 
     while (!WindowShouldClose()) { //WindowShouldClose() == false
+        game.update();
         game.input(); // <- a; -> d
-
         BeginDrawing();
         ClearBackground(DARKGRAY);
         game.render();
