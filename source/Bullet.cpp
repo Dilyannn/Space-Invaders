@@ -21,7 +21,7 @@ Bullet& Bullet::operator=(const Bullet& rhs) {
 
 void Bullet::render() {
     if(active) {
-        DrawRectangle(direction.x, direction.y, 4, 15, {243, 216, 63, 255});
+        DrawRectangle(direction.x, direction.y, 4, 15, MAROON);
     }
 }
 
