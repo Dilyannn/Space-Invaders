@@ -25,7 +25,7 @@ void Game::initializeGame() {
 
     enemyDirection      = 1;
     timeLastEnemyShot   = 0.0f;
-    enemyShotInterval   = 0.5f;
+    enemyShotInterval   = 0.75f;
 }
 
 void Game::reset() {
@@ -94,8 +94,8 @@ void Game::render() {
         enemyBullet.renderEnemy();
     }
 
-    DrawText(("Score: " + std::to_string(player.getPlayerScore())).c_str(),20, 20, 20, WHITE);
-    DrawText(("Lives: " + std::to_string(player.getPlayerLives())).c_str(),20, 50, 20, WHITE);
+    //DrawText(("Score: " + std::to_string(player.getPlayerScore())).c_str(),20, 20, 20, WHITE);
+    //DrawText(("Lives: " + std::to_string(player.getPlayerLives())).c_str(),20, 50, 20, WHITE);
 }
 
 void Game::run() {
@@ -127,7 +127,7 @@ std::vector<Barrier> Game::createBarriers() {
 
     for (int i = 0; i < 4; i++) {
         float offsetX = (i + 1) * gapBetween + i * barrierWidth;
-        float offsetY = static_cast<float>(GetScreenHeight() - 100);
+        float offsetY = static_cast<float>(GetScreenHeight() - 200);
         result.push_back(Barrier({ offsetX, offsetY }));
     }
     return result;
@@ -169,7 +169,7 @@ void Game::moveEnemies() {
     }
 
     if (hitEdge) {
-        moveDownEnemies(20);
+        moveDownEnemies(10);
     }
     for (auto& enemy : enemies) {
         enemy.setX(enemy.getX() + enemyDirection);
@@ -185,7 +185,7 @@ void Game::moveDownEnemies(int distance) {
 void Game::enemyShoot() {
     double currentTime = GetTime();
     if (currentTime - timeLastEnemyShot >= enemyShotInterval && !enemies.empty()) {
-        int indexRandomEnemy = GetRandomValue(0, (int)enemies.size() - 1);
+        int indexRandomEnemy = GetRandomValue(0, static_cast<int>(enemies.size()) - 1);
         Enemy& e = enemies[indexRandomEnemy];
         Rectangle r = e.getRect();
 

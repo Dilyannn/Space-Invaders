@@ -3,7 +3,8 @@
 #include "header/Enemy.hpp"
 
 int main() {
-    InitWindow(1000, 850, "Space Invaders");
+    constexpr int offset = 50;
+    InitWindow(750 + offset, 700 + offset * 2, "Space Invaders");
     SetTargetFPS(60);
 
     Game game;
@@ -12,7 +13,9 @@ int main() {
         game.update();
         game.input(); // <- a; -> d
         BeginDrawing();
-        ClearBackground(DARKGRAY);
+        ClearBackground(BLACK);
+        DrawRectangleRoundedLinesEx({10, 10, 780, 780}, 0.18f, 20, 2, RED);
+        DrawLineEx({20, 720}, {780, 720}, 3, RED);
         game.render();
         EndDrawing();
     }
