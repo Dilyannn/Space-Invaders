@@ -1,22 +1,44 @@
 #include "../header/Game.hpp"
+#include "../header/Player.hpp"
 #include <raylib.h>
 
 Game::Game() {
-    score = 0;
-    level = 1;
-    runningGame = true;
+    initializeGame();
+}
 
-    enemyDirection = 1;
-    timeLastEnemyShot = 0.0f;
-    enemyShotInterval = 0.5f;
+Game::~Game() = default;
+
+void Game::initializeGame() {
+    barriers.clear();
+    enemies.clear();
+    player.bullets.clear();
+    enemyBullets.clear();
 
     barriers = createBarriers();
     enemies  = createEnemies();
+
+    player.setPlayerScore(0);
+    player.setPlayerLives(3);
+
+    level               = 1;
+    runningGame         = true;
+
+    enemyDirection      = 1;
+    timeLastEnemyShot   = 0.0f;
+    enemyShotInterval   = 0.5f;
 }
 
-Game::~Game() {}
+void Game::reset() {
+    initializeGame();
+}
+
+void Game::gameOver() {
+    runningGame = false;
+}
 
 void Game::input() {
+    if (!runningGame) return;
+
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
         player.moveLeft();
     }
@@ -29,19 +51,28 @@ void Game::input() {
 }
 
 void Game::update() {
-    moveEnemies();
-    for (auto& b : player.bullets) {
-        b.update();
-    }
-    deleteInactiveBullets();
+    if (runningGame) {
+        moveEnemies();
 
-    enemyShoot();
-    for (auto& b : enemyBullets) {
-        b.update();
+        for (auto& b : player.bullets) {
+            b.update();
+        }
+        deleteInactiveBullets();
+
+        enemyShoot();
+        for (auto& b : enemyBullets) {
+            b.update();
+        }
+        deleteInactiveEnemyBullets();
+
+        //TODO: add collisions
+    } else {
+        if (IsKeyPressed(KEY_ENTER)) {
+            reset();
+            initializeGame();
+        }
     }
-    deleteInactiveEnemyBullets();
 }
-
 
 void Game::checkCollisions() {
     // TODO: bullet–enemy, bullet–barrier, enemy–barrier, etc.
@@ -62,6 +93,9 @@ void Game::render() {
     for (auto& enemyBullet : enemyBullets) {
         enemyBullet.renderEnemy();
     }
+
+    DrawText(("Score: " + std::to_string(player.getPlayerScore())).c_str(),20, 20, 20, WHITE);
+    DrawText(("Lives: " + std::to_string(player.getPlayerLives())).c_str(),20, 50, 20, WHITE);
 }
 
 void Game::run() {

@@ -21,6 +21,9 @@ public:
     void checkCollisions();
     void render();
     void run();
+    void reset();
+    void gameOver();
+    void initializeGame();
 
 private:
     static std::vector<Barrier> createBarriers();
@@ -34,7 +37,6 @@ private:
     std::vector<GameObject*> bullets;
 
     Player player;
-    int score;
     int level;
     bool runningGame;
     int enemyDirection; // +1 (->) / –1 (<-)
