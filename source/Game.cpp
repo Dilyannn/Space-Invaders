@@ -8,7 +8,7 @@ Game::Game() {
 
     enemyDirection = 1;
     timeLastEnemyShot = 0.0f;
-    enemyShotInterval = 1.0f;
+    enemyShotInterval = 0.5f;
 
     barriers = createBarriers();
     enemies  = createEnemies();
