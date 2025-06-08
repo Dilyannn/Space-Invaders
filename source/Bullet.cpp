@@ -21,8 +21,20 @@ Bullet& Bullet::operator=(const Bullet& rhs) {
 
 void Bullet::render() {
     if(active) {
-        DrawRectangle(direction.x, direction.y, 4, 15, MAROON);
+        DrawRectangle(direction.x, direction.y, 4, 15, RED);
     }
+}
+void Bullet::renderEnemy() {
+    if (!active) return;
+    static constexpr Color colors[] = { GOLD, ORANGE, YELLOW };
+    int indexRandomColor = GetRandomValue(0, 3);
+
+    DrawRectangle(
+        static_cast<int>(direction.x),
+        static_cast<int>(direction.y),
+        4, 15,
+        colors[indexRandomColor]
+    );
 }
 
 void Bullet::update() {

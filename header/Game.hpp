@@ -23,11 +23,11 @@ public:
     void run();
 
 private:
-    std::vector<Barrier> createBarriers();
+    static std::vector<Barrier> createBarriers();
     std::vector<Enemy> createEnemies();
     void deleteInactiveBullets();
     void moveEnemies();
-    void moveDownAliens(int distance);
+    void moveDownEnemies(int distance);
 
     std::vector<Barrier> barriers;
     std::vector<Enemy> enemies;
@@ -37,7 +37,14 @@ private:
     int score;
     int level;
     bool runningGame;
-    int aliensDirection; // +1 (->) / –1 (<-)
+    int enemyDirection; // +1 (->) / –1 (<-)
+
+    // Enemy shooting
+    std::vector<Bullet> enemyBullets;
+    float timeLastEnemyShot;
+    float enemyShotInterval;
+    void enemyShoot();
+    void deleteInactiveEnemyBullets();
 };
 
 #endif // GAME_HPP

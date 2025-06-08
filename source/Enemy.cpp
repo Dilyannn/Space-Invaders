@@ -57,3 +57,12 @@ Rectangle Enemy::getRect() const {
         static_cast<float>(image.width), static_cast<float>(image.height)
     };
 }
+
+void Enemy::unloadImages() {
+    for (auto & enemyImage : enemyImages) {
+        if (enemyImage.id != 0) {
+            UnloadTexture(enemyImage);
+            enemyImage.id = 0;
+        }
+    }
+}

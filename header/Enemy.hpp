@@ -17,6 +17,7 @@ public:
   int getType() const;
   Rectangle getRect() const;
   static Texture2D enemyImages[4];
+  static void unloadImages();
 
 private:
   int type;

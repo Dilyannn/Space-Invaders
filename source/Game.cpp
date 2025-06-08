@@ -5,7 +5,10 @@ Game::Game() {
     score = 0;
     level = 1;
     runningGame = true;
-    aliensDirection = 1;
+
+    enemyDirection = 1;
+    timeLastEnemyShot = 0.0f;
+    enemyShotInterval = 1.0f;
 
     barriers = createBarriers();
     enemies  = createEnemies();
@@ -26,12 +29,19 @@ void Game::input() {
 }
 
 void Game::update() {
-    moveEnemies(); // updater function
-    for (auto& bullet : player.bullets) {
-        bullet.update();
+    moveEnemies();
+    for (auto& b : player.bullets) {
+        b.update();
     }
     deleteInactiveBullets();
+
+    enemyShoot();
+    for (auto& b : enemyBullets) {
+        b.update();
+    }
+    deleteInactiveEnemyBullets();
 }
+
 
 void Game::checkCollisions() {
     // TODO: bullet–enemy, bullet–barrier, enemy–barrier, etc.
@@ -48,6 +58,9 @@ void Game::render() {
     }
     for (auto& enemy : enemies) {
         enemy.render();
+    }
+    for (auto& enemyBullet : enemyBullets) {
+        enemyBullet.renderEnemy();
     }
 }
 
@@ -110,27 +123,55 @@ void Game::moveEnemies() {
         int ex = enemy.getX();
         int ew = static_cast<int>(enemy.getRect().width);
         if (ex + ew >= GetScreenWidth() - 25) {
-            aliensDirection = -1;
+            enemyDirection = -1;
             hitEdge = true;
             break;
         }
         if (ex <= 25) {
-            aliensDirection = 1;
+            enemyDirection = 1;
             hitEdge = true;
             break;
         }
     }
 
     if (hitEdge) {
-        moveDownAliens(10);
+        moveDownEnemies(20);
     }
     for (auto& enemy : enemies) {
-        enemy.setX(enemy.getX() + aliensDirection);
+        enemy.setX(enemy.getX() + enemyDirection);
     }
 }
 
-void Game::moveDownAliens(int distance) {
+void Game::moveDownEnemies(int distance) {
     for (auto& enemy : enemies) {
         enemy.setY(enemy.getY() + distance);
+    }
+}
+
+void Game::enemyShoot() {
+    double currentTime = GetTime();
+    if (currentTime - timeLastEnemyShot >= enemyShotInterval && !enemies.empty()) {
+        int indexRandomEnemy = GetRandomValue(0, (int)enemies.size() - 1);
+        Enemy& e = enemies[indexRandomEnemy];
+        Rectangle r = e.getRect();
+
+        Vector2 position{
+            r.x + r.width  * 0.5f,
+            r.y + r.height
+        };
+
+        enemyBullets.emplace_back(position, +5);
+
+        timeLastEnemyShot = currentTime;
+    }
+}
+
+void Game::deleteInactiveEnemyBullets() {
+    for (auto it = enemyBullets.begin(); it != enemyBullets.end(); ) {
+        if (!it->active) {
+            it = enemyBullets.erase(it);
+        } else {
+            ++it;
+        }
     }
 }

@@ -19,6 +19,7 @@ public:
   void setDirection(int direction);
   void update();
   void render();
+  void renderEnemy();
   void draw();
   Rectangle getRect();
   bool active;
