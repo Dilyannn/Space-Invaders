@@ -1,6 +1,8 @@
+// Въвеждаме нужните include-и
 #include "../header/Game.hpp"
 #include "../header/Player.hpp"
 #include <raylib.h>
+#include <algorithm>
 
 Game::Game() {
     initializeGame();
@@ -37,7 +39,12 @@ void Game::gameOver() {
 }
 
 void Game::input() {
-    if (!runningGame) return;
+    if (!runningGame) {
+        if (IsKeyPressed(KEY_ENTER)) {
+            reset();
+        }
+        return;
+    }
 
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
         player.moveLeft();
@@ -51,55 +58,107 @@ void Game::input() {
 }
 
 void Game::update() {
-    if (runningGame) {
-        moveEnemies();
+    if (!runningGame) return;
 
-        for (auto& b : player.bullets) {
-            b.update();
-        }
-        deleteInactiveBullets();
+    moveEnemies();
 
-        enemyShoot();
-        for (auto& b : enemyBullets) {
-            b.update();
-        }
-        deleteInactiveEnemyBullets();
+    for (auto& b : player.bullets) b.update();
+    deleteInactiveBullets();
 
-        //TODO: add collisions
-    } else {
-        if (IsKeyPressed(KEY_ENTER)) {
-            reset();
-            initializeGame();
-        }
+    enemyShoot();
+    for (auto& b : enemyBullets) b.update();
+    deleteInactiveEnemyBullets();
+
+    checkCollisions();
+
+    if (enemies.empty()) {
+        level++;
+        enemyShotInterval *= 0.9f;
+        enemies = createEnemies();
     }
 }
 
 void Game::checkCollisions() {
-    // TODO: bullet–enemy, bullet–barrier, enemy–barrier, etc.
+    for (auto& bullet : player.bullets) {
+        if (!bullet.active) continue;
+
+        for (auto& enemy : enemies) {
+            if (CheckCollisionRecs(bullet.getRect(), enemy.getRect())) {
+                bullet.active = false;
+
+                enemies.erase(
+                    std::remove_if(enemies.begin(), enemies.end(),
+                        [&](const Enemy& e) {
+                            return CheckCollisionRecs(bullet.getRect(), e.getRect());
+                        }),
+                    enemies.end()
+                );
+
+                player.setPlayerScore(player.getPlayerScore() + 10);
+                break;
+            }
+        }
+
+        for (auto& barrier : barriers) {
+            auto& blocks = barrier.blocks;
+            for (auto it = blocks.begin(); it != blocks.end(); ) {
+                if (CheckCollisionRecs(bullet.getRect(), it->getRect())) {
+                    bullet.active = false;
+                    it = blocks.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+        }
+    }
+
+    for (auto& b : enemyBullets) {
+        if (!b.active) continue;
+
+        if (CheckCollisionRecs(b.getRect(), { (float)player.getX(), (float)player.getY(), 40, 40 })) {
+            b.active = false;
+            player.setPlayerLives(player.getPlayerLives() - 1);
+            if (player.getPlayerLives() <= 0) {
+                gameOver();
+            } else {
+                player.reset();
+            }
+        }
+
+        for (auto& barrier : barriers) {
+            auto& blocks = barrier.blocks;
+            for (auto it = blocks.begin(); it != blocks.end(); ) {
+                if (CheckCollisionRecs(b.getRect(), it->getRect())) {
+                    b.active = false;
+                    it = blocks.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+        }
+    }
 }
 
 void Game::render() {
     player.draw();
 
-    for (auto& bullet : player.bullets) {
-        bullet.render();
-    }
-    for (auto& barrier : barriers) {
-        barrier.render();
-    }
-    for (auto& enemy : enemies) {
-        enemy.render();
-    }
-    for (auto& enemyBullet : enemyBullets) {
-        enemyBullet.renderEnemy();
-    }
+    for (auto& bullet : player.bullets) bullet.render();
+    for (auto& barrier : barriers) barrier.render();
+    for (auto& enemy : enemies) enemy.render();
+    for (auto& enemyBullet : enemyBullets) enemyBullet.renderEnemy();
 
-    //DrawText(("Score: " + std::to_string(player.getPlayerScore())).c_str(),20, 20, 20, WHITE);
-    //DrawText(("Lives: " + std::to_string(player.getPlayerLives())).c_str(),20, 50, 20, WHITE);
+    DrawText(("Score: " + std::to_string(player.getPlayerScore())).c_str(), 20, 20, 20, WHITE);
+    DrawText(("Lives: " + std::to_string(player.getPlayerLives())).c_str(), 20, 50, 20, WHITE);
+    DrawText(("Level: " + std::to_string(level)).c_str(), 20, 80, 20, WHITE);
+
+    if (!runningGame && player.getPlayerLives() <= 0) {
+        DrawText("MISSION FAILED!", GetScreenWidth() / 2 - 140, GetScreenHeight() / 2 - 40, 30, RED);
+        DrawText("Press ENTER to restart", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 + 10, 20, WHITE);
+    }
 }
 
 void Game::run() {
-    while (runningGame && !WindowShouldClose()) {
+    while (!WindowShouldClose()) {
         input();
         update();
         BeginDrawing();
@@ -110,13 +169,13 @@ void Game::run() {
 }
 
 void Game::deleteInactiveBullets() {
-    for (auto it = player.bullets.begin(); it != player.bullets.end();) {
-        if (!it->active) {
-            it = player.bullets.erase(it);
-        } else {
-            ++it;
-        }
-    }
+    for (auto it = player.bullets.begin(); it != player.bullets.end();)
+        it = !it->active ? player.bullets.erase(it) : ++it;
+}
+
+void Game::deleteInactiveEnemyBullets() {
+    for (auto it = enemyBullets.begin(); it != enemyBullets.end();)
+        it = !it->active ? enemyBullets.erase(it) : ++it;
 }
 
 std::vector<Barrier> Game::createBarriers() {
@@ -156,56 +215,49 @@ void Game::moveEnemies() {
     for (auto& enemy : enemies) {
         int ex = enemy.getX();
         int ew = static_cast<int>(enemy.getRect().width);
-        if (ex + ew >= GetScreenWidth() - 25) {
-            enemyDirection = -1;
-            hitEdge = true;
-            break;
-        }
-        if (ex <= 25) {
-            enemyDirection = 1;
+        if (ex + ew >= GetScreenWidth() - 25 || ex <= 25) {
+            enemyDirection *= -1;
             hitEdge = true;
             break;
         }
     }
 
-    if (hitEdge) {
-        moveDownEnemies(10);
-    }
     for (auto& enemy : enemies) {
-        enemy.setX(enemy.getX() + enemyDirection);
-    }
-}
-
-void Game::moveDownEnemies(int distance) {
-    for (auto& enemy : enemies) {
-        enemy.setY(enemy.getY() + distance);
+        enemy.setX(enemy.getX() + enemyDirection * 2);
+        if (hitEdge) {
+            enemy.setY(enemy.getY() + 10);
+        }
     }
 }
 
 void Game::enemyShoot() {
     double currentTime = GetTime();
     if (currentTime - timeLastEnemyShot >= enemyShotInterval && !enemies.empty()) {
-        int indexRandomEnemy = GetRandomValue(0, static_cast<int>(enemies.size()) - 1);
-        Enemy& e = enemies[indexRandomEnemy];
-        Rectangle r = e.getRect();
+        std::vector<Enemy> bottomEnemies;
 
-        Vector2 position{
-            r.x + r.width  * 0.5f,
-            r.y + r.height
-        };
+        for (int col = 0; col < GetScreenWidth(); col += 50) {
+            Enemy* bottom = nullptr;
+            for (auto& e : enemies) {
+                if (e.getX() >= col && e.getX() < col + 50) {
+                    if (!bottom || e.getY() > bottom->getY()) {
+                        bottom = &e;
+                    }
+                }
+            }
+            if (bottom) bottomEnemies.push_back(*bottom);
+        }
 
-        enemyBullets.emplace_back(position, +5);
+        if (!bottomEnemies.empty()) {
+            int randomIndex = GetRandomValue(0, (int)bottomEnemies.size() - 1);
+            Enemy& shooter = bottomEnemies[randomIndex];
+            Rectangle r = shooter.getRect();
 
-        timeLastEnemyShot = currentTime;
-    }
-}
+            Vector2 position;
+            position.x = r.x + r.width / 2;
+            position.y = r.y + r.height;
 
-void Game::deleteInactiveEnemyBullets() {
-    for (auto it = enemyBullets.begin(); it != enemyBullets.end(); ) {
-        if (!it->active) {
-            it = enemyBullets.erase(it);
-        } else {
-            ++it;
+            enemyBullets.emplace_back(position, 5);
+            timeLastEnemyShot = currentTime;
         }
     }
 }

@@ -43,3 +43,7 @@ void Bullet::update() {
         if (direction.y > GetScreenHeight() || direction.y < 0) active = false;
     }
 }
+
+Rectangle Bullet::getRect() {
+    return { direction.x, direction.y, 4, 15 };
+}
