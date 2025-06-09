@@ -6,10 +6,10 @@ int main() {
     InitWindow(750 + OFFSET, 700 + OFFSET * 2, "Space Invaders");
 
     Font font = LoadFontEx("source/fonts/PixelGame-R9AZe.otf",64,nullptr,0);
-    Texture2D shipIcon = LoadTexture("../source/images/spaceship.png");
+    Texture2D playerSpaceshipImage = LoadTexture("../source/images/spaceship.png");
 
     if (font.texture.id == 0) TraceLog(LOG_WARNING, "Font failed to load!");
-    if (shipIcon.id == 0) TraceLog(LOG_WARNING, "Ship icon failed to load!");
+    if (playerSpaceshipImage.id == 0) TraceLog(LOG_WARNING, "Player spaceship image failed to load!");
 
     SetTargetFPS(60);
     Game game;
@@ -31,11 +31,11 @@ int main() {
         }
 
         float x = 55.0f;
-        float y = ((700.0f + OFFSET * 2.0f) - (1.5 * static_cast<float>(shipIcon.height))) + 5.0f; // FINAL VERSION DON`T TOUCH
+        float y = ((700.0f + OFFSET * 2.0f) - (1.5 * static_cast<float>(playerSpaceshipImage.height))) + 5.0f; // FINAL VERSION DON`T TOUCH
         int lives = game.getLives();
 
         for (int i = 0; i < lives; i++) {
-            DrawTextureV(shipIcon, { x, y }, WHITE);
+            DrawTextureV(playerSpaceshipImage, { x, y }, WHITE);
             x += 50.0f;
         }
 
@@ -44,7 +44,7 @@ int main() {
     }
 
     UnloadFont(font);
-    UnloadTexture(shipIcon);
+    UnloadTexture(playerSpaceshipImage);
     CloseWindow();
 
     return 0;
