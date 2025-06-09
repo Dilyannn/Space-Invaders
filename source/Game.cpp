@@ -20,12 +20,12 @@ void Game::initializeGame() {
     player.setPlayerScore(0);
     player.setPlayerLives(3);
 
-    level               = 1;
-    runningGame         = true;
+    level = 1;
+    runningGame = true;
 
-    enemyDirection      = 1;
-    timeLastEnemyShot   = 0.0f;
-    enemyShotInterval   = 0.75f;
+    enemyDirection = 1;
+    timeLastEnemyShot = 0.0f;
+    enemyShotInterval = 0.75f;
 }
 
 void Game::reset() {

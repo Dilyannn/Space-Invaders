@@ -25,6 +25,19 @@ public:
     void gameOver();
     void initializeGame();
 
+    bool isRunning() const {
+        return runningGame;
+    }
+    int getLevel() const {
+        return level;
+    }
+    int getScore() const {
+        return player.getPlayerScore();
+    }
+    int getLives() const {
+        return player.getPlayerLives();
+    }
+
 private:
     static std::vector<Barrier> createBarriers();
     std::vector<Enemy> createEnemies();
@@ -41,7 +54,6 @@ private:
     bool runningGame;
     int enemyDirection; // +1 (->) / –1 (<-)
 
-    // Enemy shooting
     std::vector<Bullet> enemyBullets;
     float timeLastEnemyShot;
     float enemyShotInterval;
