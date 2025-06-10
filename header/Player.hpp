@@ -23,7 +23,7 @@ public:
     virtual void draw();
     virtual void moveLeft();
     virtual void moveRight();
-    virtual void shoot(); //TODO empty; waiting for class Bullet
+    virtual void shoot();
     std::vector<Bullet> bullets;
 
     Player operator+(int points) const;
@@ -36,7 +36,6 @@ public:
 private:
     int playerLives, playerScore;
     Texture2D image;
-    //TODO add speed;
     double lastFireTime;
 };
 

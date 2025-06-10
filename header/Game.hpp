@@ -25,18 +25,10 @@ public:
     void gameOver();
     void initializeGame();
 
-    bool isRunning() const {
-        return runningGame;
-    }
-    int getLevel() const {
-        return level;
-    }
-    int getScore() const {
-        return player.getPlayerScore();
-    }
-    int getLives() const {
-        return player.getPlayerLives();
-    }
+    bool isRunning() const;
+    int getLevel() const;
+    int getScore() const;
+    int getLives() const;
 
 private:
     static std::vector<Barrier> createBarriers();
@@ -51,6 +43,7 @@ private:
 
     Player player;
     int level;
+    int highscore;
     bool runningGame;
     int enemyDirection; // +1 (->) / –1 (<-)
 

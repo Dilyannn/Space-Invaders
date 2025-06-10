@@ -28,7 +28,7 @@ protected:
 private:
     int x, y; // coordinates
     //char symbol;
-    //TODO COLORS color; // system(color 06); //0 - balck; 6 - yellow;
+    //COLORS color; // system(color 06); //0 - balck; 6 - yellow;
 };
 
 std::ostream& operator<<(std::ostream& out, const GameObject& rhs);
