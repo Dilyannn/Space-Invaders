@@ -31,7 +31,7 @@ public:
 
     std::ostream& ins(std::ostream& out) const;
 
-    void reset(); // Reset position, lives, and score
+    void reset(); // Reset only the position
 
 private:
     int playerLives, playerScore;
