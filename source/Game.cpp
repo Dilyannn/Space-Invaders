@@ -75,8 +75,73 @@ void Game::update() {
 }
 
 void Game::checkCollisions() {
-    // TODO: bullet–enemy, bullet–barrier, enemy–barrier, etc.
+    for (auto& blt : player.bullets) {
+        if (!blt.active) continue;
+
+        for (auto eit = enemies.begin(); eit != enemies.end();) {
+            if (CheckCollisionRecs(blt.getRect(), eit->getRect())) {
+                blt.active = false;
+                player.setPlayerScore(player.getPlayerScore() + 10);
+                eit = enemies.erase(eit);
+                continue;
+            }
+            ++eit;
+        }
+
+        for (auto& bar : barriers) {
+            for (auto bit = bar.blocks.begin(); bit != bar.blocks.end();) {
+                if (CheckCollisionRecs(blt.getRect(), bit->getRect())) {
+                    blt.active = false;
+                    bit = bar.blocks.erase(bit);
+                    continue;
+                }
+                ++bit;
+            }
+        }
+    }
+
+    for (auto& eblt : enemyBullets) {
+        if (!eblt.active) continue;
+
+        if (CheckCollisionRecs(eblt.getRect(), player.getRect())) {
+            eblt.active = false;
+            player.setPlayerLives(player.getPlayerLives() - 1);
+            if (player.getPlayerLives() <= 0) {
+                gameOver();
+            } else {
+                player.reset();
+            }
+        }
+
+        for (auto& bar : barriers) {
+            for (auto bit = bar.blocks.begin(); bit != bar.blocks.end();) {
+                if (CheckCollisionRecs(eblt.getRect(), bit->getRect())) {
+                    eblt.active = false;
+                    bit = bar.blocks.erase(bit);
+                    continue;
+                }
+                ++bit;
+            }
+        }
+    }
+
+    for (auto& e : enemies) {
+        // a) vs. barrier blocks
+        for (auto& bar : barriers) {
+            for (auto bit = bar.blocks.begin(); bit != bar.blocks.end();) {
+                if (CheckCollisionRecs(bit->getRect(), e.getRect())) {
+                    bit = bar.blocks.erase(bit);
+                    continue;
+                }
+                ++bit;
+            }
+        }
+        if (CheckCollisionRecs(e.getRect(), player.getRect())) {
+            gameOver();
+        }
+    }
 }
+
 
 void Game::render() {
     player.draw();
