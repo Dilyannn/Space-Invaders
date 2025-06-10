@@ -97,9 +97,7 @@ std::ostream& operator<<(std::ostream& out, const Player& rhs) {
     return rhs.ins(out);
 }
 
-void Player::reset() { // Reset position, lives, and score
+void Player::reset() { // Reset only the position
     setX((GetScreenWidth() - image.width) / 2.0f);
-    setY(GetScreenHeight() - image.height - 90);;
-    playerLives = 3;
-    playerScore = 0;
+    setY(GetScreenHeight() - image.height - 90);
 }
