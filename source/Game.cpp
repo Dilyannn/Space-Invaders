@@ -61,7 +61,6 @@ void Game::update() {
     if (!runningGame) return;
 
     moveEnemies();
-
     for (auto& b : player.bullets) b.update();
     deleteInactiveBullets();
 
@@ -70,10 +69,9 @@ void Game::update() {
     deleteInactiveEnemyBullets();
 
     checkCollisions();
-
     if (enemies.empty()) {
         level++;
-        enemyShotInterval *= 0.9f;
+        enemyShotInterval *= 1.25f;
         enemies = createEnemies();
     }
 }
@@ -194,7 +192,7 @@ std::vector<Barrier> Game::createBarriers() {
 
 std::vector<Enemy> Game::createEnemies() {
     std::vector<Enemy> result;
-    int rows = 4, cols = 12;
+    int rows = 4, cols = 10;
     int spacingX = 50, spacingY = 50;
     int startX = 100, startY = 100;
 
@@ -215,18 +213,29 @@ void Game::moveEnemies() {
     for (auto& enemy : enemies) {
         int ex = enemy.getX();
         int ew = static_cast<int>(enemy.getRect().width);
-        if (ex + ew >= GetScreenWidth() - 25 || ex <= 25) {
-            enemyDirection *= -1;
+        if (ex + ew >= GetScreenWidth() - 25) {
+            enemyDirection = -1;
+            hitEdge = true;
+            break;
+        }
+        if (ex <= 25) {
+            enemyDirection = 1;
             hitEdge = true;
             break;
         }
     }
 
+    if (hitEdge) {
+        moveDownEnemies(10);
+    }
     for (auto& enemy : enemies) {
-        enemy.setX(enemy.getX() + enemyDirection * 2);
-        if (hitEdge) {
-            enemy.setY(enemy.getY() + 10);
-        }
+        enemy.setX(enemy.getX() + enemyDirection);
+    }
+}
+
+void Game::moveDownEnemies(int distance) {
+    for (auto& enemy : enemies) {
+        enemy.setY(enemy.getY() + distance);
     }
 }
 
@@ -248,7 +257,7 @@ void Game::enemyShoot() {
         }
 
         if (!bottomEnemies.empty()) {
-            int randomIndex = GetRandomValue(0, (int)bottomEnemies.size() - 1);
+            int randomIndex = GetRandomValue(0, static_cast<int>(bottomEnemies.size()) - 1);
             Enemy& shooter = bottomEnemies[randomIndex];
             Rectangle r = shooter.getRect();
 
