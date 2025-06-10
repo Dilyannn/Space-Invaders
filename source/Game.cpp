@@ -4,6 +4,8 @@
 #include <raylib.h>
 #include <algorithm>
 
+Font font1 = LoadFontEx("source/fonts/PixelGame-R9AZe.otf",64,nullptr,0);
+
 Game::Game() {
     initializeGame();
 }
@@ -58,7 +60,12 @@ void Game::input() {
 }
 
 void Game::update() {
-    if (!runningGame) return;
+    if (!runningGame) {
+        if (IsKeyPressed(KEY_ENTER)) {
+            reset();
+        }
+        return;
+    }
 
     moveEnemies();
     for (auto& b : player.bullets) b.update();
@@ -70,10 +77,27 @@ void Game::update() {
 
     checkCollisions();
     if (enemies.empty()) {
-        level++;
-        enemyShotInterval *= 1.25f;
-        enemies = createEnemies();
+        if (level < 3) {
+            level++;
+            enemyShotInterval *= 0.5f;
+            enemies = createEnemies();
+        } else {
+            gameOver();
+        }
     }
+}
+
+bool Game::isRunning() const {
+    return runningGame;
+}
+int Game::getLevel() const {
+    return level;
+}
+int Game::getScore() const {
+    return player.getPlayerScore();
+}
+int Game::getLives() const {
+    return player.getPlayerLives();
 }
 
 void Game::checkCollisions() {
@@ -113,7 +137,7 @@ void Game::checkCollisions() {
     for (auto& b : enemyBullets) {
         if (!b.active) continue;
 
-        if (CheckCollisionRecs(b.getRect(), { (float)player.getX(), (float)player.getY(), 40, 40 })) {
+        if (CheckCollisionRecs(b.getRect(), { static_cast<float>(player.getX()), static_cast<float>(player.getY()), 40, 40 })) {
             b.active = false;
             player.setPlayerLives(player.getPlayerLives() - 1);
             if (player.getPlayerLives() <= 0) {
@@ -145,12 +169,8 @@ void Game::render() {
     for (auto& enemy : enemies) enemy.render();
     for (auto& enemyBullet : enemyBullets) enemyBullet.renderEnemy();
 
-    DrawText(("Score: " + std::to_string(player.getPlayerScore())).c_str(), 20, 20, 20, WHITE);
-    DrawText(("Lives: " + std::to_string(player.getPlayerLives())).c_str(), 20, 50, 20, WHITE);
-    DrawText(("Level: " + std::to_string(level)).c_str(), 20, 80, 20, WHITE);
-
     if (!runningGame && player.getPlayerLives() <= 0) {
-        DrawText("MISSION FAILED!", GetScreenWidth() / 2 - 140, GetScreenHeight() / 2 - 40, 30, RED);
+        DrawText("GAME OVER!", GetScreenWidth() / 2 - 90, GetScreenHeight() / 2 - 40, 30, RED);
         DrawText("Press ENTER to restart", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 + 10, 20, WHITE);
     }
 }
@@ -160,7 +180,7 @@ void Game::run() {
         input();
         update();
         BeginDrawing();
-        ClearBackground(DARKGRAY);
+        ClearBackground(BLACK);
         render();
         EndDrawing();
     }

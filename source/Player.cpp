@@ -47,7 +47,6 @@ void Player::moveRight() {
 }
 
 void Player::shoot() {
-    // TODO add class Bullet logic
     //bullets.push_back(Bullet({direction.x + image.width/2 - 2, direction.y},-6));
     if (GetTime() - lastFireTime > 0.35) {
         Vector2 startPos;
@@ -97,9 +96,8 @@ std::ostream& operator<<(std::ostream& out, const Player& rhs) {
     return rhs.ins(out);
 }
 
-void Player::reset() { // Reset position, lives, and score
+void Player::reset() {
     setX((GetScreenWidth() - image.width) / 2.0f);
-    setY(GetScreenHeight() - image.height - 90);;
-    playerLives = 3;
-    playerScore = 0;
+    setY(GetScreenHeight() - image.height - 90);
+    bullets.clear();
 }
