@@ -2,7 +2,7 @@
 
 A simple C++ recreation of the classic arcade game built with the [raylib](https://github.com/raysan5/raylib) graphics library.
 
-This repository contains all game source files, images and fonts required to build the game. See [`docs/ARCHITECTURE.md`](docs/documentation.md) for a detailed description of the code structure and classes.
+This repository contains all game source files, images and fonts required to build the game. See [`docs/documentation.md`](docs/documentation.md) for a detailed description of the code structure and classes.
 
 ## Quick Start
 
