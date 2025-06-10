@@ -68,6 +68,12 @@ void Game::update() {
     }
 
     moveEnemies();
+
+    while (player.getPlayerScore() >= 300 && getLevel() > 1) {
+        player.setPlayerLives(player.getPlayerLives() + 1);
+        player.setPlayerScore(player.getPlayerScore() - 300);
+    }
+
     for (auto& b : player.bullets) b.update();
     deleteInactiveBullets();
 
