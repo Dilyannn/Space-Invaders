@@ -1,93 +1,261 @@
-# Project Architecture
+Space Invaders (C++ / raylib)
+Space Invaders е ретро аркадна игра, реализирана на C++ с помощта на библиотеката raylib. В тази документация сме описали подробно описание на всяка основна функция и клас от нашия проект, както и техните отговорности, главната логика на програмата и йерархията между класовете.
 
-## Overview
+📂 Файлова структура
 
-Space-Invaders is a C++ implementation of the classic arcade game built using the **raylib** library. The game logic is organized into a set of classes defined under `header/` and implemented under `source/`.
 
-This document describes the overall structure of the project, the key classes, and the purpose of important functions.
 
-## File Layout
+🏗 Основна йерархия на класовете
 
-- `main.cpp` – entry point that initializes raylib, loads fonts and textures, creates a `Game` instance and runs the main loop.
-- `header/` – header files declaring the game classes:
-  - `Game.hpp`
-  - `GameObject.hpp`
-  - `Player.hpp`
-  - `Enemy.hpp`
-  - `Bullet.hpp`
-  - `Barrier.hpp`
-- `source/` – implementation of the classes and assets (images and fonts).
-- `algorithms/levels/` – text notes describing the design of each level.
-- `CMakeLists.txt` – build configuration using CMake and FetchContent to include raylib.
+GameObject
+└─ (базов клас)
 
-## Class Overview
+Game
+├─ Player : public GameObject
+├─ Enemy  : public GameObject
+├─ Bullet : public GameObject
+└─ Barrier
+└─ Block
+Game: централният клас, управлява състоянието на играта и обектите. Използва функции като update(), gameOver(), reset(), run(), render(), checkCollisions(), input();
 
-### Game
-Represents the overall game state and orchestrates the other objects.
 
-Key responsibilities:
-- Manage player, enemies, bullets, and barriers.
-- Handle input, update game objects, render them, and check for collisions.
-- Control game progression and levels.
+GameObject: дефинира общи позиции x,y и виртуални методи.
 
-Important methods:
-- `input()` – reads keyboard input to move the player or fire bullets.
-- `update()` – moves enemies, updates bullets, spawns enemy bullets, and triggers level changes.
-- `render()` – draws all active objects on screen and displays messages.
-- `checkCollisions()` – detects bullet–enemy, bullet–barrier, and enemy bullet–player collisions.
-- `initializeGame()`/`reset()` – sets up or resets all game objects for a new session.
-- `enemyShoot()` – periodically chooses a random bottom enemy to fire a bullet at the player.
 
-### GameObject
-Base class providing X/Y coordinates, accessors, and basic rendering hooks.
+Player, Enemy, Bullet наследяват GameObject.
 
-### Player
-Derived from `GameObject`. Tracks lives, score, and the list of bullets fired by the player.
 
-Main methods:
-- `moveLeft()` / `moveRight()` – move the player horizontally within the screen bounds.
-- `shoot()` – spawn a new `Bullet` object when the space bar is pressed, respecting a fire rate delay.
-- `draw()` – render the player's ship texture.
-- `reset()` – reposition the player and clear bullets after losing a life.
+Barrier съдържа Block обекти - grid визуализиращ бариерите (не наследява GameObject).
 
-### Enemy
-Represents an individual alien. Holds a texture corresponding to its type.
+📋 Описание на класовете и методите
+Game
+Какво прави: цялостно управление на играта, цикъл, нива, точки, животи.
+Метод
+Описание
+Game()
+Конструктор: извиква initializeGame(,) за да зададе начално състояние.
+~Game()
+Деструктор: освобождава ресурси (ако се наложи).
+initializeGame()
+Нулира всички контейнери (играч, врагове, бариери), задава начален брой животи и точки.
+reset()
+Рестарт на играта: просто извиква initializeGame().
+gameOver()
+Спира цикъла на играта (флаг runningGame == false).
+input()
+При натискане на бутони от клавиатурата: A/<- мести играча(космическия кораб) наляво, а D/->- надясно, Space - стреля, Enter рестартира играта.
+update()
+Основен ъпдейт: премества врагове, ъпдейтва куршумите, проверява за колизии, нива и рестарт на играта.
+checkCollisions()
+Обработва, когато се засекат: куршуми с врагове/бариери, куршуми на врагове с играч/бариери.
+render()
+Визуализира всички обекти: играч, врагове, бариери, куршуми и интерфейс/меню.
+run()
+Главен цикъл: while(runningGame && !WindowShouldClose()) { input(); update(); render(); }.
+createBarriers() (статичен)
+Генерира вектор от 4 бариери, всяка съставена от Block според дефинирана матрица (grid).
+createEnemies()
+Поставя враговете във вектор(rows×cols) разпределени с X/Y разстояния.
+moveEnemies()
+Хоризонтално мести всички врагове и обръща посоката при достигане на края на екрана.
+moveDownEnemies(int distance)
+Придвижва враговете надолу при обръщане на посоката (от 1 става -1).
+enemyShoot()
+Избира произволен „долен“ извънземен и стреля куршум надолу.
+deleteInactiveBullets() /
+Премахва неактивни куршуми от двата вектора (player.bullets, enemyBullets).
+deleteInactiveEnemyBullets()
 
-Methods:
-- `update()` – currently moves the enemy to the right; overall enemy movement is coordinated by `Game::moveEnemies()`.
-- `render()` – draw the enemy texture.
-- `getRect()` – axis-aligned rectangle used for collision detection.
-- `unloadImages()` – release loaded textures when finished.
 
-### Bullet
-Represents a projectile fired by the player or enemies.
 
-Key attributes:
-- `Vector2 direction` – holds the current position of the bullet.
-- `int speed` – vertical speed (positive for downward, negative for upward).
-- `bool active` – indicates if the bullet is still on screen.
+Полета:
+Player player
 
-Important methods:
-- `update()` – update position and deactivate when leaving the screen.
-- `render()` – draw a player bullet.
-- `renderEnemy()` – draw an enemy bullet in a random color.
-- `getRect()` – rectangle for collisions.
 
-### Barrier and Block
-Barriers are made up of small `Block` objects arranged according to a grid. Each block can be destroyed individually when hit by a bullet.
+std::vector<Enemy> enemies -вълна от извънземни.
 
-## Game Loop
-`main.cpp` sets up the window, fonts, and textures. It then repeatedly:
-1. Calls `game.input()` and `game.update()`.
-2. Starts drawing (`BeginDrawing`), clears the screen, draws UI elements and game objects via `game.render()`.
-3. Ends drawing (`EndDrawing`).
 
-The game ends when the player loses all lives or clears the enemies after the third level. Pressing **Enter** resets the game.
+std::vector<Barrier> barriers -4 бариери.
 
-## Building
-Build the project using CMake (version 3.30 or later):
-```bash
-cmake -S . -B build
-cmake --build build
-```
-The executable will be named `Space-Invaders` and links against raylib, which is fetched automatically.
+
+std::vector<Bullet> enemyBullets -куршуми от враговете.
+
+
+int level, enemyDirection -номер на ниво и посока на движение.
+
+
+float timeLastEnemyShot, enemyShotInterval -контрол на стрелбата на враговете.
+
+
+bool runningGame -флаг проверяващ дали играта върви.
+
+
+
+GameObject
+Роля: позиция и интерфейс за рендер/ъпдейт.
+Поле/Метод
+Описание
+int x, y
+Координати на обекта.
+getX()/getY()
+Връщат текущата координата.
+setX(int)/setY(int)
+Задават нова координата.
+virtual update()
+Метод за ъпдейт (по подразбиране празен).
+virtual render()
+Метод за рендър (по подразбиране празен).
+operator= / коп. констр.
+Поддържа правилото Big Five.
+
+Player : GameObject
+Управлява кораба -движение, стрелба, животи и точки.
+Метод
+Описание
+Player()
+Конструктор: движи spaceship.png и го позиционира в долен център.
+moveLeft()/moveRight()
+Премества кораба, ограничава се в границите на прозореца.
+shoot()
+Създава нов Bullet в bullets с позиция над кораба и посока нагоре.
+draw()
+Визуализира кораба с DrawTexture().
+getRect()
+Връща Rectangle{x,y,width,height} за колизии.
+getPlayerLives()/Score()
+Гетър на животи и точки.
+setPlayerLives()/Score()
+Сетър на животи и точки.
+reset()
+Нулира позиция, точки и животи (използва се след удар).
+std::vector<Bullet> bullets
+Контейнер с куршуми, изстреляни от играча.
+
+Enemy : GameObject
+Враг-Извънземен -различна текстура (различна снимка за всеки враг).
+Метод
+Описание
+Enemy(int type,x,y)
+Конструктор: възпроизвежда текстура спрямо type (синьо/зелено/червено/жълто).
+update()
+Game::moveEnemies()движи хоризонтално враговете.
+render()
+Визуализира снимката за определения враг на екрана.
+getRect()
+Връща Rectangle за колизии.
+static UnloadImages()
+Освобождава заредените споделени текстури при край на играта.
+static Texture2D enemyImages[4]
+Споделен масив от текстури за различните типове врагове/извънземни.
+
+Bullet : GameObject
+Куршуми, които играча или врага стреля.
+Поле/Метод
+Описание
+Vector2 direction
+Позиция и посока на движение (куршума се движи нагоре/надолу).
+int speed
+Скорост по Y (вертикално).
+Color color
+Цвят („MAROON” за играча, случаен за враг на база 3 основни: static constexpr Color colors[] = { GOLD, ORANGE, YELLOW };).
+bool active
+Дали куршумът е в движение (извън екрана става inactive).
+update()
+Актуализира позиция и деактивира при излизане от прозореца.
+render()
+Чертеж на играч-куршума.
+renderEnemy()
+Чертеж на вражески куршум с color.
+getRect()
+Връща Rectangle за сблъсъци.
+
+Barrier & Block
+Защитни бариери - използваме Block елементи (grid от 1 и 0, където само 1-ниците се оцветяват).
+Клас/Метод
+Описание
+Barrier()
+Генерира blocks от Block({x,y}) според static grid матрица.
+render()
+чертае всички блокове.
+Block({x,y})
+Конструктор: позиция.
+Block::render()
+визуализиране на 6×6 пиксела блок.
+Block::getRect()
+Rectangle за колизии.
+
+
+Главна логика и цикъла
+Инициализация на main.cpp:
+
+
+Отваря игралния прозорец, зарежда шрифта(за текста, визуализиращ се на екрана) и текстурите(куршуми, бариери, кораб, врагове).
+
+
+Създава Game game; (конструктор ->initializeGame()).
+
+
+Настройва FPS(60).
+
+
+Основен цикъл (run() в Game):
+
+
+…
+
+Input: A/<- и D/->за движение; Space за стрелба; Enter за рестарт при край на играта .
+
+
+Update:
+
+
+moveEnemies() -хоризонтално и надолу вълната от врагове.
+
+
+player.bullets обновяване + почистване inactive.
+
+
+enemyShoot() ->enemyBullets + почистване.
+
+
+checkCollisions() ->реакции на удари и загуба на живот.
+
+
+Ако enemies.empty():
+
+
+Увеличава level, ускорява стрелба на враговете;
+
+
+Ако level > 3, True Win става gameOver().
+
+
+Render:
+
+
+player.draw(), enemy.render(), barrier.render(), bullet.render();
+
+
+Визуализация на интерфейса: точки, животи(използваме снимказа на кораба), ниво;
+
+
+Ако !runningGame: показва GAME OVER или YOU WON!!! и имаме опцията да написнем Enter за рестарт.
+
+
+
+📈 Алгоритъм за нива
+Начално: enemySpeed = 1.0f, enemyShotInterval = 0.75f
+
+
+След всяко ниво:
+
+
+level++;
+
+
+enemyShotInterval *= 0.5f
+
+
+Максимум 3 нива ->победа
+След първото (т.е. като сме на второ и трето ниво) ниво имаме опцията при размяна на 300 точки можем да получим един живот.
+

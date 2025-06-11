@@ -24,7 +24,6 @@ public:
   Rectangle getRect();
   bool active;
 
-
 private:
   Vector2 direction;
   int speed;
