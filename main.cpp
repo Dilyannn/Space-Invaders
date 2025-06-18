@@ -57,7 +57,7 @@ int main() {
                     game.reset();
                 }
             } else {
-                DrawTextEx(font, "GAME OVER", {560,740}, 34,2,RED);
+                DrawTextEx(font, "", {560,740}, 34,2,RED);
             }
         }
 
