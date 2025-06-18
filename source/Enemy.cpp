@@ -21,9 +21,7 @@ Enemy::Enemy(int type, int x, int y): GameObject(x, y), type(type) {
 
 Enemy::~Enemy() = default;
 
-Enemy::Enemy(const Enemy& rhs)
-    : GameObject(rhs), type(rhs.type)
-{
+Enemy::Enemy(const Enemy& rhs): GameObject(rhs), type(rhs.type) {
     int indexType = (type - 1) % 4;
     if (indexType < 0) indexType = 0;
     image = enemyImages[indexType];
